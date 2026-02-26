@@ -12,7 +12,7 @@ app.get("/", (req, res) => {
     </head>
     <body>
       <h1>🚀 Deployment Successful</h1>
-      <p>Hello Abhimanyu Bhardwakj 👋</p>
+      <p>Hello Abhimanyu Bhardwaj 👋</p>
       <p>🕒 Server Time: ${new Date().toLocaleString()}</p>
     </body>
   </html>
