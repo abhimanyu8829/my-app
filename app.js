@@ -31,7 +31,7 @@ app.get("/", (req, res) => {
       </head>
       <body>
         <div class="box">
-          <h1>🚀 Auto Deploy Successful</h1>
+          <h1>🚀hii here is yash dave how are you </h1>
           <p>This version was deployed via GitHub Actions CI/CD</p>
           <p>Server Time: ${new Date().toLocaleString()}</p>
         </div>
