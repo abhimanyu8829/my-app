@@ -9,8 +9,8 @@ const PORT = process.env.PORT || 3000;
 
 const catalog = [
   {
-    id: "vortex-protocol",
-    title: "Vortex Protocol",
+    id: "abhimanyu-protocol",
+    title: "Abhimanyu Protocol",
     type: "series",
     genre: "Sci-Fi",
     year: 2025,
@@ -19,7 +19,7 @@ const catalog = [
     category: "Trending Now",
     image: "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=1200&q=80",
     banner: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=1800&q=80",
-    description: "A rogue cyber-defense unit uncovers a hidden network that can rewrite national histories in real time."
+    description: "A rogue cyber‑defense unit uncovers a hidden network that can rewrite histories in real time — a pulse‑pounding techno-thriller that blurs truth and code."
   },
   {
     id: "last-mile",
@@ -114,7 +114,7 @@ const catalog = [
   }
 ];
 
-const myListIds = ["vortex-protocol", "red-line", "atlas-run"];
+const myListIds = ["abhimanyu-protocol", "red-line", "atlas-run"];
 
 app.use(
   helmet({
