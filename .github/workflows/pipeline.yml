@@ -9,6 +9,7 @@ env:
   IMAGE_TAG: v${{ github.run_number }}
 
 jobs:
+
   build:
     runs-on: ubuntu-latest
 
@@ -39,6 +40,7 @@ jobs:
           docker push ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${IMAGE_TAG}
           docker push ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:latest
 
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -51,9 +53,9 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            echo "Deploying version: $IMAGE_TAG"
+            IMAGE="${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:v${{ github.run_number }}"
 
-            IMAGE="${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:$IMAGE_TAG"
+            echo "Deploying version: v${{ github.run_number }}"
 
             echo "Logging into ECR..."
             aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | \
