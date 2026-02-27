@@ -11,6 +11,7 @@ env:
 jobs:
 
   build:
+    name: Build & Push Image
     runs-on: ubuntu-latest
 
     steps:
@@ -26,65 +27,112 @@ jobs:
 
       - name: Login to ECR
         run: |
-          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | \
-          docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} \
+          | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
 
-      - name: Build Docker Image
+      - name: Build Image
         run: |
           docker build -t ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${IMAGE_TAG} .
           docker tag ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${IMAGE_TAG} \
                      ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:latest
 
-      - name: Push Docker Image
+      - name: Push Image
         run: |
           docker push ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:${IMAGE_TAG}
           docker push ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:latest
 
 
   deploy:
+    name: Zero-Downtime Deploy with Auto Rollback
     needs: build
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy safely via SSH
+      - name: Deploy to EC2
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            IMAGE="${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:v${{ github.run_number }}"
 
-            echo "Deploying version: v${{ github.run_number }}"
+            set -Eeuo pipefail
 
-            echo "Logging into ECR..."
-            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | \
-            docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
+            REGISTRY="${{ secrets.ECR_REGISTRY }}"
+            REPOSITORY="${{ secrets.ECR_REPOSITORY }}"
+            REGION="${{ secrets.AWS_REGION }}"
+            IMAGE="${REGISTRY}/${REPOSITORY}:v${{ github.run_number }}"
 
-            echo "Pulling image..."
-            docker pull $IMAGE
+            echo "Starting deployment of $IMAGE"
 
-            echo "Starting temporary container..."
-            docker run -d -p 3001:3000 --name temp-container $IMAGE
+            # -------- PHASE 1: Capture Previous State --------
+            PREVIOUS_IMAGE=$(docker inspect devops-container \
+              --format='{{.Config.Image}}' 2>/dev/null || true)
 
-            sleep 5
+            echo "Previous running image: ${PREVIOUS_IMAGE:-none}"
 
-            if docker ps | grep temp-container; then
-              echo "New container running successfully. Switching..."
+            # -------- PHASE 2: Authenticate --------
+            aws ecr get-login-password --region "$REGION" \
+              | docker login --username AWS --password-stdin "$REGISTRY"
 
-              docker stop devops-container || true
-              docker rm devops-container || true
+            # -------- PHASE 3: Pull New Image --------
+            docker pull "$IMAGE"
 
-              docker run -d -p 80:3000 --restart always \
-                --name devops-container $IMAGE
+            # -------- PHASE 4: Start Candidate Container --------
+            docker rm -f candidate-container 2>/dev/null || true
 
-              docker stop temp-container
-              docker rm temp-container
+            docker run -d \
+              -p 3001:3000 \
+              --name candidate-container \
+              "$IMAGE"
 
-              echo "Deployment successful!"
-            else
-              echo "New container failed. Keeping old version running."
-              docker stop temp-container || true
-              docker rm temp-container || true
+            echo "Waiting for application to become healthy..."
+            sleep 10
+
+            if ! curl -fs http://localhost:3001 > /dev/null; then
+              echo "Health check failed on candidate container."
+              docker rm -f candidate-container
               exit 1
             fi
+
+            echo "Candidate container is healthy."
+
+            # -------- PHASE 5: Switch Traffic --------
+            docker rm -f devops-container 2>/dev/null || true
+
+            docker run -d \
+              -p 80:3000 \
+              --restart always \
+              --name devops-container \
+              "$IMAGE"
+
+            docker rm -f candidate-container
+
+            echo "Traffic switched to new container."
+
+            # -------- PHASE 6: Stability Monitoring --------
+            echo "Monitoring container stability..."
+            sleep 20
+
+            if ! docker ps --filter "name=devops-container" --filter "status=running" | grep devops-container > /dev/null; then
+              echo "New container crashed. Initiating rollback."
+
+              if [ -n "${PREVIOUS_IMAGE:-}" ]; then
+                docker run -d \
+                  -p 80:3000 \
+                  --restart always \
+                  --name devops-container \
+                  "$PREVIOUS_IMAGE"
+
+                echo "Rollback completed successfully."
+              else
+                echo "No previous image available. Manual recovery required."
+              fi
+
+              exit 1
+            fi
+
+            echo "Deployment completed successfully and is stable."
+
+            # -------- PHASE 7: Cleanup --------
+            docker image prune -f
