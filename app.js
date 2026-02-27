@@ -116,15 +116,15 @@ const catalog = [
 
 const myListIds = ["vortex-protocol", "red-line", "atlas-run"];
 
-// Loosen CSP to allow Google Fonts, Unsplash Images, and WikiMedia logos
 app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
-        "default-src": ["'self'"],
-        "script-src": ["'self'", "'unsafe-inline'"],
-        "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-        "img-src": [
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        styleSrcElem: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        imgSrc: [
           "'self'",
           "data:",
           "https://images.unsplash.com",
@@ -132,15 +132,18 @@ app.use(
           "https://assets.nflxext.com",
           "https://images.pexels.com",
         ],
-        "font-src": ["'self'", "https://fonts.gstatic.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
       },
     },
-  }),
+  })
 );
 
 app.use(morgan("combined"));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "public"), {
+  maxAge: "1d",
+  etag: true
+}));
 
 const browsePages = ["/", "/browse", "/tv-shows", "/movies", "/new-popular", "/my-list", "/search"];
 
