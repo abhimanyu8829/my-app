@@ -1,6 +1,19 @@
-version: "3"
+version: "3.8"
+
 services:
-  app:
-    build: .
+  netflix-clone:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: netflix_app
     ports:
       - "3000:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

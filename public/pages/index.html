@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netflix Clone - Watch TV Shows Online, Watch Movies Online</title>
+    <link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+        <div class="flex items-center">
+            <a href="/" class="navbar-logo">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" alt="Netflix">
+            </a>
+            <div class="nav-links flex">
+                <a href="/browse" class="nav-link active">Home</a>
+                <a href="/tv-shows" class="nav-link">TV Shows</a>
+                <a href="/movies" class="nav-link">Movies</a>
+                <a href="/new-popular" class="nav-link">New & Popular</a>
+                <a href="/my-list" class="nav-link">My List</a>
+            </div>
+        </div>
+        <div class="nav-actions flex items-center">
+            <button id="search-btn"><i class="fas fa-search"></i></button>
+            <div class="profile-menu">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png" alt="Profile" style="height: 32px; border-radius: 4px;">
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero" id="hero-section">
+            <div class="hero-content fade-in">
+                <h1 id="hero-title" style="font-size: 4rem; margin-bottom: 20px;">Vortex Protocol</h1>
+                <p id="hero-description" style="max-width: 600px; font-size: 1.2rem; margin-bottom: 30px;">
+                    A rogue cyber-defense unit uncovers a hidden network that can rewrite national histories in real time.
+                </p>
+                <div class="hero-btns flex" style="gap: 15px;">
+                    <a href="/watch/vortex-protocol" class="btn btn-primary">
+                        <span>Play</span>
+                    </a>
+                    <button class="btn btn-secondary" id="more-info-btn">
+                        <span>More Info</span>
+                    </button>
+                </div>
+            </div>
+            <div class="hero-overlay"></div>
+        </section>
+
+        <!-- Movie Rows -->
+        <div id="movie-containers" style="margin-top: -150px; position: relative; z-index: 5;">
+            <!-- Rows will be injected here by app.js -->
+        </div>
+    </main>
+
+    <style>
+        .hero {
+            height: 100vh;
+            width: 100%;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            padding: 0 var(--container-padding);
+            position: relative;
+            background-image: url('https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=1800&q=80');
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 60%),
+                        linear-gradient(to top, var(--netflix-black) 0%, transparent 20%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .row {
+            padding: 20px var(--container-padding);
+        }
+
+        .row-header {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+        }
+
+        .row-posters {
+            display: flex;
+            gap: 10px;
+            overflow-x: scroll;
+            padding: 20px 0;
+            scrollbar-width: none; /* Firefox */
+        }
+
+        .row-posters::-webkit-scrollbar {
+            display: none; /* Chrome/Safari */
+        }
+
+        .row-item {
+            flex: 0 0 calc(100% / 6); /* Show 6 cards at once */
+            min-width: 200px;
+        }
+    </style>
+
+    <script src="../scripts/app.js"></script>
+    <script>
+        // Handle Navbar Scroll
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+    </script>
+</body>
+</html>
