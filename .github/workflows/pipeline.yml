@@ -99,8 +99,9 @@ jobs:
             docker rm -f devops-container 2>/dev/null || true
             sleep 3
 
-            # Start new container (NO PORT BINDING — NGINX handles traffic)
+            # Start new production container (FIXED WITH PORT BINDING)
             docker run -d \
+              -p 3000:3000 \
               --name devops-container \
               --restart always \
               -e PORT=3000 \
@@ -122,6 +123,7 @@ jobs:
 
               if [ -n "${PREVIOUS_IMAGE:-}" ]; then
                 docker run -d \
+                  -p 3000:3000 \
                   --name devops-container \
                   --restart always \
                   "$PREVIOUS_IMAGE"
