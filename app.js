@@ -130,6 +130,7 @@ app.use(
           "https://images.unsplash.com",
           "https://upload.wikimedia.org",
           "https://assets.nflxext.com",
+          "https://images.pexels.com",
         ],
         "font-src": ["'self'", "https://fonts.gstatic.com"],
       },
