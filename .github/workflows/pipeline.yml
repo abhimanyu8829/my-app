@@ -1,4 +1,4 @@
-name: CI/CD Pipeline (Failure Test)
+name: CI/CD Pipeline
 
 on:
   push:
@@ -46,17 +46,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy safely via SSH (FORCED FAILURE TEST)
+      - name: Deploy safely via SSH
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-
             IMAGE="${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:v${{ github.run_number }}"
 
-            echo "🚨 FAILURE TEST STARTED"
             echo "Deploying version: v${{ github.run_number }}"
 
             echo "Logging into ECR..."
@@ -71,5 +69,22 @@ jobs:
 
             sleep 5
 
-            echo "🔥 INTENTIONALLY FAILING BEFORE SWITCH"
-            exit 1
+            if docker ps | grep temp-container; then
+              echo "New container running successfully. Switching..."
+
+              docker stop devops-container || true
+              docker rm devops-container || true
+
+              docker run -d -p 80:3000 --restart always \
+                --name devops-container $IMAGE
+
+              docker stop temp-container
+              docker rm temp-container
+
+              echo "Deployment successful!"
+            else
+              echo "New container failed. Keeping old version running."
+              docker stop temp-container || true
+              docker rm temp-container || true
+              exit 1
+            fi
