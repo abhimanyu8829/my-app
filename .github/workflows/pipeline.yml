@@ -69,11 +69,14 @@ jobs:
 
             echo "Previous running image: ${PREVIOUS_IMAGE:-none}"
 
+            # Login to ECR
             aws ecr get-login-password --region "$REGION" \
               | docker login --username AWS --password-stdin "$REGISTRY"
 
+            # Pull new image
             docker pull "$IMAGE"
 
+            # Start candidate container on temp port
             docker rm -f candidate-container 2>/dev/null || true
 
             docker run -d \
@@ -81,51 +84,56 @@ jobs:
               --name candidate-container \
               "$IMAGE"
 
-            echo "Waiting for application to become healthy..."
+            echo "Waiting for health check..."
             sleep 10
 
             if ! wget --no-verbose --tries=1 --spider http://localhost:3001 > /dev/null; then
-              echo "Health check failed on candidate container."
+              echo "Health check failed."
               docker rm -f candidate-container
               exit 1
             fi
 
-            echo "Candidate container is healthy."
+            echo "Candidate container healthy."
 
+            # Remove old container
             docker rm -f devops-container 2>/dev/null || true
+            sleep 3
 
+            # Start new container (NO PORT BINDING — NGINX handles traffic)
             docker run -d \
-              -p 3000:3000 \
+              --name devops-container \
+              --restart always \
               -e PORT=3000 \
               -e NODE_ENV=production \
-              --restart always \
-              --name devops-container \
               "$IMAGE"
 
             docker rm -f candidate-container
 
-            echo "Traffic switched to new container."
+            echo "Switched to new container."
 
+            # Stability check
             sleep 20
 
             if ! docker ps --filter "name=devops-container" --filter "status=running" | grep devops-container > /dev/null; then
-              echo "New container crashed. Initiating rollback."
+              echo "Container crashed. Rolling back..."
+
+              docker rm -f devops-container 2>/dev/null || true
+              sleep 3
 
               if [ -n "${PREVIOUS_IMAGE:-}" ]; then
                 docker run -d \
-                  -p 3000:3000 \
-                  --restart always \
                   --name devops-container \
+                  --restart always \
                   "$PREVIOUS_IMAGE"
 
-                echo "Rollback completed successfully."
+                echo "Rollback successful."
               else
-                echo "No previous image available. Manual recovery required."
+                echo "No previous image found."
               fi
 
               exit 1
             fi
 
-            echo "Deployment completed successfully and is stable."
+            echo "Deployment successful and stable."
 
             docker image prune -f
