@@ -62,22 +62,22 @@
     <style>
         :root{
             --container-padding: 48px;
-            --netflix-black: #0f0f0f;
-            --accent: #e50914;
+            --netflix-black: #FFFFFF;
+            --accent: #DC2743;
         }
 
         html,body{height:100%;}
         body {
             margin: 0;
             font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-            color: #fff;
-            background: #000;
+            color: #0F0F0F;
+            background: #FFFFFF;
             -webkit-font-smoothing:antialiased;
             -moz-osx-font-smoothing:grayscale;
         }
 
         .navbar{display:flex;justify-content:space-between;align-items:center;padding:12px var(--container-padding);position:fixed;top:0;left:0;right:0;z-index:20;transition:background .18s ease,backdrop-filter .18s ease}
-        .navbar.scrolled{background:rgba(0,0,0,0.5);backdrop-filter:blur(6px)}
+        .navbar.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(6px);box-shadow:0 2px 10px rgba(0,0,0,0.08)}
         .navbar-logo img{height:34px}
 
         .hero {
@@ -98,8 +98,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, rgba(5,8,12,0.85) 0%, rgba(5,8,12,0.35) 40%, rgba(5,8,12,0.0) 70%),
-                linear-gradient(to top, var(--netflix-black) 0%, transparent 20%);
+            background: linear-gradient(90deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.7) 40%, rgba(255,255,255,0.2) 70%),
+                linear-gradient(to top, rgba(255,255,255,0.95) 0%, transparent 20%);
             pointer-events: none;
         }
 
@@ -110,25 +110,25 @@
             padding-left: 20px;
         }
 
-        #hero-title{font-weight:800;letter-spacing:-1px;text-shadow:0 12px 40px rgba(0,0,0,0.6);font-size:clamp(2.2rem,6vw,4.8rem);margin:0 0 16px}
-        #hero-description{font-weight:300;color:#e6e6e6;line-height:1.45;font-size:clamp(1rem,2.2vw,1.15rem);margin:0 0 26px}
+        #hero-title{font-weight:800;letter-spacing:-1px;text-shadow:0 2px 8px rgba(0,0,0,0.1);font-size:clamp(2.2rem,6vw,4.8rem);margin:0 0 16px;color:#0F0F0F}
+        #hero-description{font-weight:300;color:#333333;line-height:1.45;font-size:clamp(1rem,2.2vw,1.15rem);margin:0 0 26px}
 
         .btn{display:inline-flex;align-items:center;gap:10px;padding:12px 20px;border-radius:8px;font-weight:600;text-decoration:none;cursor:pointer;border:0}
-        .btn-primary{background:linear-gradient(90deg,var(--accent),#ff4b4b);color:#fff;box-shadow:0 10px 30px rgba(229,9,20,0.22)}
-        .btn-secondary{background:rgba(255,255,255,0.06);color:#fff;border:1px solid rgba(255,255,255,0.08)}
-        .btn:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(0,0,0,0.55)}
+        .btn-primary{background:linear-gradient(90deg,var(--accent),#FF4B4B);color:#fff;box-shadow:0 10px 30px rgba(220,39,67,0.22)}
+        .btn-secondary{background:#F0F0F0;color:#0F0F0F;border:1px solid #E0E0E0}
+        .btn:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(0,0,0,0.15)}
 
         .fade-in{animation:fadeUp .9s cubic-bezier(.2,.9,.2,1) both}
         @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
         .row{padding:20px var(--container-padding)}
-        .row-header{font-size:1.4rem;margin-bottom:15px}
+        .row-header{font-size:1.4rem;margin-bottom:15px;color:#0F0F0F}
 
         .row-posters{display:flex;gap:10px;overflow-x:scroll;padding:20px 0;scrollbar-width:none}
         .row-posters::-webkit-scrollbar{display:none}
         .row-item{flex:0 0 calc(100%/6);min-width:200px}
 
-        #movie-containers{margin-top:-150px;position:relative;z-index:5;padding-bottom:60px}
+        #movie-containers{margin-top:-150px;position:relative;z-index:5;padding-bottom:60px;background:#FFFFFF}
     </style>
 
     <script src="/scripts/main.js"></script>
