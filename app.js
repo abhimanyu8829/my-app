@@ -116,28 +116,45 @@ const catalog = [
 
 const myListIds = ["vortex-protocol", "red-line", "atlas-run"];
 
-app.use(helmet());
+// Loosen CSP to allow Google Fonts, Unsplash Images, and WikiMedia logos
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        "default-src": ["'self'"],
+        "script-src": ["'self'", "'unsafe-inline'"],
+        "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        "img-src": [
+          "'self'",
+          "data:",
+          "https://images.unsplash.com",
+          "https://upload.wikimedia.org",
+          "https://assets.nflxext.com",
+        ],
+        "font-src": ["'self'", "https://fonts.gstatic.com"],
+      },
+    },
+  }),
+);
+
 app.use(morgan("combined"));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-const pageRouteMap = {
-  "/": "index.html",
-  "/browse": "index.html",
-  "/tv-shows": "index.html",
-  "/movies": "index.html",
-  "/new-popular": "index.html",
-  "/my-list": "index.html",
-  "/search": "index.html",
-  "/watch": "watch.html",
-  "/login": "login.html",
-  "/signup": "signup.html",
-};
+const browsePages = ["/", "/browse", "/tv-shows", "/movies", "/new-popular", "/my-list", "/search"];
 
-Object.entries(pageRouteMap).forEach(([route, file]) => {
+browsePages.forEach((route) => {
   app.get(route, (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "pages", file));
+    res.sendFile(path.join(__dirname, "public", "pages", "index.html"));
   });
+});
+
+app.get("/login", (req, res) => res.sendFile(path.join(__dirname, "public", "pages", "login.html")));
+app.get("/signup", (req, res) => res.sendFile(path.join(__dirname, "public", "pages", "login.html"))); // Placeholder
+
+// Dynamic route for watching a specific title
+app.get("/watch/:id", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "pages", "watch.html"));
 });
 
 app.get("/api/catalog", (req, res) => {
