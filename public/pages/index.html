@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Netflix Clone - Watch TV Shows Online, Watch Movies Online</title>
-    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="stylesheet" href="/styles/main.css">
 </head>
+
 <body>
     <nav class="navbar" id="navbar">
         <div class="flex items-center">
@@ -23,7 +25,8 @@
         <div class="nav-actions flex items-center">
             <button id="search-btn"><i class="fas fa-search"></i></button>
             <div class="profile-menu">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png" alt="Profile" style="height: 32px; border-radius: 4px;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png" alt="Profile"
+                    style="height: 32px; border-radius: 4px;">
             </div>
         </div>
     </nav>
@@ -34,7 +37,8 @@
             <div class="hero-content fade-in">
                 <h1 id="hero-title" style="font-size: 4rem; margin-bottom: 20px;">Vortex Protocol</h1>
                 <p id="hero-description" style="max-width: 600px; font-size: 1.2rem; margin-bottom: 30px;">
-                    A rogue cyber-defense unit uncovers a hidden network that can rewrite national histories in real time.
+                    A rogue cyber-defense unit uncovers a hidden network that can rewrite national histories in real
+                    time.
                 </p>
                 <div class="hero-btns flex" style="gap: 15px;">
                     <a href="/watch/vortex-protocol" class="btn btn-primary">
@@ -73,8 +77,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 60%),
-                        linear-gradient(to top, var(--netflix-black) 0%, transparent 20%);
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 60%),
+                linear-gradient(to top, var(--netflix-black) 0%, transparent 20%);
             pointer-events: none;
         }
 
@@ -97,20 +101,23 @@
             gap: 10px;
             overflow-x: scroll;
             padding: 20px 0;
-            scrollbar-width: none; /* Firefox */
+            scrollbar-width: none;
+            /* Firefox */
         }
 
         .row-posters::-webkit-scrollbar {
-            display: none; /* Chrome/Safari */
+            display: none;
+            /* Chrome/Safari */
         }
 
         .row-item {
-            flex: 0 0 calc(100% / 6); /* Show 6 cards at once */
+            flex: 0 0 calc(100% / 6);
+            /* Show 6 cards at once */
             min-width: 200px;
         }
     </style>
 
-    <script src="../scripts/app.js"></script>
+    <script src="/scripts/app.js"></script>
     <script>
         // Handle Navbar Scroll
         window.addEventListener('scroll', () => {
@@ -123,4 +130,5 @@
         });
     </script>
 </body>
+
 </html>
